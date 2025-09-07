@@ -1,5 +1,5 @@
 #!/bin/bash
-# Make Vite executable
+# Make Vite executable on Vercel Linux VM
 chmod +x node_modules/.bin/vite
-# Run the normal build
+# Build the project
 npm run build
