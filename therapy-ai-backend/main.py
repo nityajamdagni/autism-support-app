@@ -79,3 +79,9 @@ if __name__ == "__main__":
     print("Flask server starting...")
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
+if not os.path.exists("db/chroma.sqlite3"):
+    print("Building vector store from documents...")
+    vectorstore = Chroma.from_documents(texts, embedding=embeddings, persist_directory="db")
+else:
+    print("Loading existing vector store...")
+    vectorstore = Chroma(persist_directory="db", embedding_function=embeddings)

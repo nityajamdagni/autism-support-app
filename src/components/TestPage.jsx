@@ -29,20 +29,6 @@ const TestPage = () => {
     return "Severe Autism";
   };
 
-/*  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("ISAA Autism Screening Result", 20, 20);
-
-    doc.setFontSize(12);
-    doc.text(`Child Name: ${childName}`, 20, 40);
-    doc.text(`Total Score: ${totalScore}`, 20, 50);
-    doc.text(`Diagnosis: ${getDiagnosis()}`, 20, 60);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 70);
-
-    doc.save(`ISAA_Result_${childName.replace(/\s/g, "_")}.pdf`);
-  }; */
-
 const downloadPDF = () => {
   const doc = new jsPDF();
 
