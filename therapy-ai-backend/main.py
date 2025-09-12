@@ -6,12 +6,13 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import Ollama
-from langchain.chains import RetrievalQA
+
+from tavily import TavilyClient
 
 app = Flask(__name__)
 CORS(app)
 
+# Load PDFs
 def load_documents():
     docs = []
     pdf_folder = "pdfs"
@@ -32,7 +33,7 @@ if not docs:
     exit()
 
 print("Splitting documents into chunks...")
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=300)
 texts = text_splitter.split_documents(docs)
 
 print("Creating embeddings...")
@@ -41,31 +42,43 @@ embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-
 print("Initializing vector store...")
 vectorstore = Chroma.from_documents(texts, embedding=embeddings, persist_directory="db")
 
-print("Loading Ollama LLM...")
-llm = Ollama(model="llama3")
-
-qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=vectorstore.as_retriever())
+# Tavily Client
+print("Initializing Tavily Client...")
+client = TavilyClient("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")
+response = client.extract(
+    urls=["https://www.autismspeaks.org/"]
+)
+print(response)
 
 @app.route("/ask", methods=["POST"])
 def ask():
     data = request.get_json()
-    question = data.get("question", "")
+    question = data.get("question", "").strip()
+
     if not question:
         return jsonify({"error": "No question provided"}), 400
 
-    prompt_template = (
-        "You are a supportive, expert autism therapy assistant. "
-        "Always provide helpful, hopeful, and practical strategies based on best practices and documents available. "
-        "Avoid saying 'I don't know' or leaving questions unanswered. "
-        "Here's the question: {question}"
-    )
-    full_prompt = prompt_template.format(question=question)
-
     try:
-        answer = qa_chain.run(full_prompt)
+        prompt_template = (
+            "You are a highly experienced and compassionate autism therapy assistant. "
+            "Answer the question thoroughly in multiple detailed paragraphs. "
+            "Provide practical strategies, real examples, and helpful resources. "
+            "Avoid one-line or short responses. "
+            "Here’s the question: {question}"
+        )
+        full_prompt = prompt_template.format(question=question)
+
+        response = client.search(
+            query=full_prompt,
+            include_answer="advanced"
+        )
+
+        answer = response.get("answer", "Sorry, no answer available.")
         return jsonify({"answer": answer})
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Exception: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     print("Flask server running on port 5000...")

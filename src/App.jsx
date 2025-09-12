@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 // These are in src/components
 import ChatPage from "./components/ChatPage";
 import TestPage from "./components/TestPage";
-import Awareness from "./components/Awareness"; // ✅ New Awareness page
+import Awareness from "./components/Awareness"; 
 
 // This is directly in src
 import Therapy from "./therapy";
