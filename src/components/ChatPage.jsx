@@ -57,7 +57,7 @@ const ChatPage = () => {
   setLoading(true);
 
   try {
-    const res = await fetch("http://localhost:5000/ask", {
+    const res = await fetch("https://autismsupport-ecfva4hteyf5czh5.southeastasia-01.azurewebsites.net/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -6,7 +6,6 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-
 from tavily import TavilyClient
 
 app = Flask(__name__)
@@ -42,12 +41,9 @@ embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-
 print("Initializing vector store...")
 vectorstore = Chroma.from_documents(texts, embedding=embeddings, persist_directory="db")
 
-# Tavily Client
 print("Initializing Tavily Client...")
 client = TavilyClient("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")
-response = client.extract(
-    urls=["https://www.autismspeaks.org/"]
-)
+response = client.extract(urls=["https://www.autismspeaks.org/"])
 print(response)
 
 @app.route("/ask", methods=["POST"])
@@ -79,7 +75,7 @@ def ask():
     except Exception as e:
         return jsonify({"error": f"Exception: {str(e)}"}), 500
 
-
 if __name__ == "__main__":
-    print("Flask server running on port 5000...")
-    app.run(port=5000)
+    print("Flask server starting...")
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)

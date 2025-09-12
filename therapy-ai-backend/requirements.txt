@@ -1,0 +1,11 @@
+flask
+flask-cors
+langchain
+chromadb
+tavily
+sentence-transformers
+fastapi
+gunicorn
+uvicorn
+tavily
+pydantic
